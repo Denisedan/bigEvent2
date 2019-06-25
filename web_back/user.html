@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
 
 </head>
 
@@ -36,7 +37,8 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control email" id="inputEmail3" value="lisisi@126.com" name="email">
+                        <input type="text" class="form-control email" id="inputEmail3" value="lisisi@126.com"
+                            name="email">
                     </div>
                 </div>
 
@@ -51,7 +53,8 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
                     <div class="col-sm-4">
-                        <input type="password" class="form-control pwd" id="inputEmail3" value="12345678" name="password">
+                        <input type="password" class="form-control pwd" id="inputEmail3" value="12345678"
+                            name="password">
                     </div>
                 </div>
 
@@ -64,51 +67,73 @@
             </form>
         </div>
     </div>
+    <!-- bootstrap中模态框 -->
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+                </div>
+                <div class="modal-body">
+                   修改成功
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
-         // 用户头像预览
-        // <input type="file" id="exampleInputFile">
-        $('#exampleInputFile').on('change',function(e){
-            e.preventDefault();
-            console.log(this.files[0]);
-            var file = this.files[0];
-            var url = window.URL.createObjectURL(file);
-            $('.pic').attr('src',url);
+        /* 进到个人中心 就发送ajax请求
+       获取用户信息
+       请求地址：http://localhost:8000/admin/userinfo_get 网络地址: https://autumnfish.cn/big/admin/userinfo_get
+       请求方式：get
+       请求参数：无
+       返回数据：
+       名称	类型	说明
+       username	string	用户名称
+       nickname	string	用户昵称
+       email	string	用户邮箱
+       user_pic	string	用户图片地址
+       password	string	用户密码
+       */
 
-        })
-
-        /* 
-        获取用户信息
-        请求地址：http://localhost:8000/admin/userinfo_get 网络地址: https://autumnfish.cn/big/admin/userinfo_get
-        请求方式：get
-        请求参数：无
-        返回数据：
-        名称	类型	说明
-        username	string	用户名称
-        nickname	string	用户昵称
-        email	string	用户邮箱
-        user_pic	string	用户图片地址
-        password	string	用户密码
-        */
-       $('.change').on('click',function(e){
-           e.preventDefault()
-        $.ajax({
-            type: 'get',
-            url: 'http://localhost:8000/admin/userinfo_get',
-            success: function (backData) {
-                console.log(backData);
-                if (backData.code == 200) {
-                    $('.user_name').val(backData.data.username);
-                    $('.user_small').val(backData.data.nickname);
-                    $('.email').val(backData.data.email);
-                    $('.pic').attr('src', backData.data.user_pic);
-                    $('.pwd').val(backData.data.password);
+        $(function () {
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8000/admin/userinfo_get',
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        // $('.user_name').val(backData.data.username);
+                        // $('.user_small').val(backData.data.nickname);
+                        // $('.email').val(backData.data.email);
+                        // $('.pwd').val(backData.data.password);
+                        for (var key in backData.data) {
+                            $('input.' + key).val(backData.data[key])
+                        }
+                        $('.pic').attr('src', backData.data.user_pic);
+                    }
 
                 }
-
-            }
+            })
         });
-       
-        /* 编辑用户信息
+
+        // 用户头像预览
+        // <input type="file" id="exampleInputFile">
+        $('#exampleInputFile').on('change', function () {
+            console.log(this.files[0]);
+            var file = this.files[0];
+            var url = URL.createObjectURL(file);
+            $('.pic').attr('src', url);
+        })
+
+
+
+        /* 编辑用户信息  点击按钮修改
             请求地址：http://localhost:8000/admin/userinfo_edit 网络地址: https://autumnfish.cn/big/admin/userinfo_edit
             请求方式：post
             请求参数：使用 formdata 提交
@@ -122,21 +147,34 @@
             名称	类型	说明
             msg	string	文字信息 ‘修改成功’ ‘修改失败’
         */
-   
-           var formdata = new FormData($('form')[0])
-           $.ajax({
-               type:'post',
-               url:'http://localhost:8000/admin/userinfo_edit',
-               data:formdata,
-               contentType:false,
-               processData:false,
-               success:function(backData){
-                   console.log(backData);
-               }
-           })
-       })
-       
-       
+        $('.change').on('click', function (e) {
+            // 这个按钮是submit 所以要阻止默认行为
+            e.preventDefault();
+            var formdata = new FormData($('form')[0])
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8000/admin/userinfo_edit',
+                data: formdata,
+                contentType: false,
+                processData: false,
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        // 修改成功后模态框弹出
+                        $('#myModal').modal()
+                    };
+                    //给模态框一个点击事件
+                    $('.btn-primary').on('click',function(){
+                        // iframe标签获取父元素直接加上parent
+                        parent.window.location.reload()
+                    })
+                }
+            })
+        })
+
+
+
+
     </script>
 </body>
 
