@@ -46,7 +46,12 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic pic">
-                        <input type="file" id="exampleInputFile" name="user_pic">
+                        <input type="file" id="exampleInputFile" name="user_pic" style="display: none">
+                        <br>
+                        <!-- 把input:file隐藏 用label for input的id名 然后放入img 既可美化文件按钮 -->
+                        <label for="exampleInputFile">
+                            <img src="./search.png" alt="" width="100">
+                        </label>
                     </div>
                 </div>
 
