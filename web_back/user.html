@@ -25,13 +25,13 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control user_name" id="inputEmail3" value="李思思" name="username">
+                        <input type="text" class="form-control username" id="inputEmail3" value="李思思" name="username">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">昵称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control user_small" id="inputEmail3" value="思思" name="nickname">
+                        <input type="text" class="form-control nickname" id="inputEmail3" value="思思" name="nickname">
                     </div>
                 </div>
                 <div class="form-group">
@@ -78,7 +78,7 @@
                     <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
                 </div>
                 <div class="modal-body">
-                   修改成功
+                    修改成功
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary">确定</button>
@@ -108,10 +108,10 @@
                 success: function (backData) {
                     console.log(backData);
                     if (backData.code == 200) {
-                        // $('.user_name').val(backData.data.username);
-                        // $('.user_small').val(backData.data.nickname);
-                        // $('.email').val(backData.data.email);
-                        // $('.pwd').val(backData.data.password);
+                        /*  $('.user_name').val(backData.data.username);
+                         $('.user_small').val(backData.data.nickname);
+                         $('.email').val(backData.data.email);
+                         $('.pwd').val(backData.data.password); */
                         for (var key in backData.data) {
                             $('input.' + key).val(backData.data[key])
                         }
@@ -164,10 +164,40 @@
                         $('#myModal').modal()
                     };
                     //给模态框一个点击事件
-                    $('.btn-primary').on('click',function(){
+                    $('.btn-primary').on('click', function () {
                         // iframe标签获取父元素直接加上parent
-                        parent.window.location.reload()
-                    })
+                        //然后直接让父元素刷新页面------------最简单的方法1
+                        // parent.window.location.reload();
+
+                        //也可以重新获取用户信息 但是设置的是iframe的父元素 所以所有的设置前面加上parent 修改结束后还要手动隐藏模态框
+                    
+                            /* 
+                            获取用户信息
+                            请求地址：http://localhost:8000/admin/getuser 网络地址: https://autumnfish.cn/big/admin/getuser
+                            请求方式：get
+                            请求参数：
+                            返回数据
+                            名称	类型	说明
+                            nickname	string	用户昵称
+                            user_pic	string	用户图片地址
+                            */
+                            $.ajax({
+                                type: 'get',
+                                url: 'http://localhost:8000/admin/getuser',
+                                success: function (backData) {
+                                    console.log(backData);
+                                    if (backData.code == 200) {
+                                        parent.$('.user_info span').html('欢迎&nbsp;&nbsp; ' + backData.data.nickname)
+                                        parent.$('.user_info img').attr('src', backData.data.user_pic)
+                                        parent.$('.user_center_link img').attr('src', backData.data.user_pic)
+                                    }
+
+                                }
+                            });
+                            $('#myModal').modal('hide');
+                        })
+
+                 
                 }
             })
         })
